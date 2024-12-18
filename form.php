@@ -1,3 +1,7 @@
+<?php
+include 'database.php';
+?>
+
 <!DOCTYPE html>
 <html lang="ru">
   <head>
@@ -20,7 +24,7 @@
     </header>
 
     <main>
-      <a href="index.html">На главную страницу</a>
+      <a href="index.php">На главную страницу</a>
       <h1>Подача заявления</h1>
 
       <section id="statement">
