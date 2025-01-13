@@ -1,11 +1,3 @@
-<?php
-include 'database.php';
-
-$result = $mysqli->query("SELECT * FROM houses");
-
-?>
-
-
 <!DOCTYPE html>
 <html lang="ru">
 
@@ -17,6 +9,10 @@ $result = $mysqli->query("SELECT * FROM houses");
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="js/script.js" defer></script>
+    <script src="js/map copy.js" defer></script>
 </head>
 
 <body>
@@ -40,7 +36,7 @@ $result = $mysqli->query("SELECT * FROM houses");
         <section id="intro">
             <div class="container">
                 <div class="intro_title_inner">
-                    <h1>Контроль и мониторинг санитарного состояния жилых домов в Москве</h1>
+                    <h1 class="h1-main">Контроль и мониторинг санитарного состояния жилых домов в Москве</h1>
                 </div>
                 <div class="intro_inner">
                     <div class="intro_text_inner">
@@ -70,18 +66,18 @@ $result = $mysqli->query("SELECT * FROM houses");
 
         <section id="map-block">
             <div class="container">
-                <h2>Карта</h2>
-                <form action="search_results.html" method="GET">
+                <h2 class="h2-main">Карта</h2>
+                <form action="backend/get_placemark.php" method="GET">
                     <div class="form-group">
-                        <input type="text" id="search" name="search" placeholder="Введите адрес">
+                        <input type="text" id="address" class="field input" name="address" placeholder="Введите адрес">
 
                         <button class="btn-bright" type="submit">Найти</button>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group pt-16">
                         <div class="form">
-                            <label for="period">За какой период:</label>
-                            <select id="period" name="period" placeholder="За все время">
+                            <label for="period">За какой период</label>
+                            <select id="period" class="field select" name="period" placeholder="За все время">
                                 <option value="all">Все периоды</option>
                                 <option value="week">За неделю</option>
                                 <option value="month">За месяц</option>
@@ -91,19 +87,17 @@ $result = $mysqli->query("SELECT * FROM houses");
                             </select>
                         </div>
                         <div class="form">
-                            <label for="district">Район:</label>
-                            <select id="district" name="district" placeholder="Все районы">
-                                <option value="all">Все районы</option>
-                                <option value="center">Центральный</option>
-                                <option value="north">Северный</option>
-                                <option value="south">Южный</option>
-                                <option value="east">Восточный</option>
-                                <option value="west">Западный</option>
+                            <label for="district">Округ</label>
+                            <select
+                                id="district"
+                                class="field select"
+                                name="district">
+                                <option value="all">Все округа</option>
                             </select>
                         </div>
                         <div class="form">
-                            <label for="year_built">Год постройки:</label>
-                            <select id="year_built" name="year_built" placeholder="Все года">
+                            <label for="year_built">Год постройки</label>
+                            <select id="year_built" class="field select" name="year_built" placeholder="Все года">
                                 <option value="all">Все года</option>
                                 <option value="before_2000">До 2000</option>
                                 <option value="2000_2010">2000-2010</option>
@@ -111,25 +105,24 @@ $result = $mysqli->query("SELECT * FROM houses");
                             </select>
                         </div>
                         <div class="form">
-                            <label for="insects">Насекомые:</label>
-                            <select id="insects" name="insects" placeholder="Все виды">
+                            <label for="insects">Насекомые</label>
+                            <select
+                                id="insects"
+                                class="field select"
+                                name="insects">
                                 <option value="all">Все виды</option>
-                                <option value="cockroach">Тараканы</option>
-                                <option value="bedbugs">Клопы</option>
-                                <option value="ants">Муравьи</option>
-                                <option value="mosquitoes">Комары</option>
                             </select>
                         </div>
                     </div>
 
                     <div id="map" class="map"></div>
-                    <script src="https://api-maps.yandex.ru/2.1/?apikey=ВАШ_ДЕЙСТВИТЕЛЬНЫЙ_API_КЛЮЧ&lang=ru_RU"></script>
-                    <script src="script.js"></script>
+                    <script src="https://api-maps.yandex.ru/2.1/?apikey=22b04afd-ac73-42fa-a1ec-06a4af1c98fe&lang=ru_RU"></script>
+
+                    <div id="coordinatesList"></div>
                 </form>
             </div>
         </section>
     </main>
-
 </body>
 
 </html>
