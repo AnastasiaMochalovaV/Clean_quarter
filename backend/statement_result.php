@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $comment = !empty($_POST['comment']) ? $mysqli->real_escape_string($_POST['comment']) : null;
 
     if (!empty($_FILES['file']['name'])) {
-        $uploadDir = 'uploads/';
+        $uploadDir = '../uploads/';
         $filePath = $uploadDir . basename($_FILES['file']['name']);
 
         if (move_uploaded_file($_FILES['file']['tmp_name'], $filePath)) {
@@ -41,18 +41,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         . ($filePath ? "'$filePath'" : "NULL") . ")";
 
 
-        
+
     if ($mysqli->query($query)) {
         $statement_id = $mysqli->insert_id;
 
-        // Получаем данные из скрытого поля
         $pestTypes = isset($_POST['insects'][0]) ? explode(',', $_POST['insects'][0]) : [];
 
         foreach ($pestTypes as $pestType) {
-            // Экранируем входные данные
             $pestType = $mysqli->real_escape_string(trim($pestType));
 
-            // Проверяем, существует ли вредитель в таблице pests
             $pestQuery = "SELECT pest_id FROM pests WHERE type = '$pestType'";
             $pestResult = $mysqli->query($pestQuery);
 
@@ -60,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $pestRow = $pestResult->fetch_assoc();
                 $pest_id = $pestRow['pest_id'];
 
-                // Добавляем связь в таблицу pests_statement
                 $pestsQuery = "INSERT INTO pests_statement (statement_id, pest_id) VALUES (?, ?)";
                 $stmt = $mysqli->prepare($pestsQuery);
                 if ($stmt) {
@@ -77,7 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
-        echo "Заявление успешно отправлено!";
+        setcookie('status', 'success', time() + 3600, '/');
+        header("Location: ../index.php");
+        exit;
     } else {
         echo "Ошибка при добавлении заявления: " . $mysqli->error;
     }

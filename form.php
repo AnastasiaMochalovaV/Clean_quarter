@@ -109,7 +109,9 @@
                 <select
                   id="insects"
                   class="field select"
-                  name="insects"></select>
+                  name="insects">
+                  <option value="" disabled selected></option>
+                </select>
 
                 <input type="hidden" name="insects[]" id="hidden-insects">
               </div>
@@ -119,7 +121,7 @@
             </div>
 
             <div class="pt-16">
-              <button type="button" id="add-insect" class="btn-add">Добавить</button>
+              <button type="button" id="add-insect" class="btn-add">Добавить еще</button>
             </div>
 
             <div class="pt-32">
@@ -164,7 +166,7 @@
           </div>
 
           <div class="right">
-            <button class="btn-bright" type="submit">Отправить заявление</button>
+            <button class="btn-bright" type="submit" id="submit-form">Отправить заявление</button>
           </div>
         </form>
       </div>

@@ -3,7 +3,6 @@ header("Content-Type: application/json; charset=UTF-8");
 
 include 'database.php';
 
-$address = $_GET['address'] ?? null;
 $period = $_GET['period'] ?? 'all';
 $district = $_GET['district'] ?? 'all';
 $year_built = $_GET['year_built'] ?? 'all';
@@ -16,11 +15,6 @@ try {
               JOIN statements s USING(house_id)
               JOIN pests_statement ps USING(statement_id)
               WHERE 1=1";
-
-    if ($address) {
-        $query .= " AND SIMPLE_ADDRESS LIKE ?";
-        $params[] = "%$address%";
-    }
 
     if ($period !== 'all') {
         if ($period === 'week') {

@@ -29,6 +29,10 @@ p {
   margin: 0;
 }
 
+.ui-helper-hidden-accessible {
+  display: none;
+}
+
 /* selection */
 main {
   margin-top: 120px;
@@ -58,7 +62,6 @@ section {
   display: flex;
   justify-content: end;
 }
-
 
 /* ul li */
 .tire ul {
@@ -203,6 +206,33 @@ section {
 .btn-file {
 }
 
+/* notifications */
+.notifications {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  padding: 20px;
+  background-color: #E0ECD9;
+  color: #66A140;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  z-index: 2000;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.notifications.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.notifications p {
+  margin: 0;
+  font-size: 16px;
+  text-align: center;
+}
 
 /* form */
 .form-select {
@@ -215,12 +245,16 @@ section {
 }
 
 .right-side {
-  max-width: 400px;
-  width: 400px;
+  width: 60%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  align-items: flex-end;
+}
+
+.right-side div{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .form-group {
@@ -242,7 +276,6 @@ section {
 .pt-32 {
   padding-top: 32px;
 }
-
 
 /* label */
 label {
@@ -276,6 +309,8 @@ label {
 
 .close {
   margin-left: 20px;
+  margin-top: 18px;
+  width: max-content;
   background: url("../images/close.svg") no-repeat right 12px center;
   background-size: 16px;
 }
@@ -294,7 +329,7 @@ label {
 
 .ui-autocomplete {
   margin: 0;
-  padding: 0; 
+  padding: 0;
   background-color: #fff;
   color: #000;
   border: 1px solid #ccc;
@@ -307,7 +342,7 @@ label {
   box-sizing: border-box; /* Учитывать паддинги и бордеры */
 }
 
-.ui-menu-item { 
+.ui-menu-item {
   padding: 10px;
   cursor: pointer;
   list-style-type: none;
@@ -317,20 +352,19 @@ label {
   overflow: hidden; /* Обрезает текст, который выходит за границы */
 }
 
-
 .ui-autocomplete::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 .ui-autocomplete::-webkit-scrollbar-track {
-  background: #CBCECF;
-  border-radius: 8px; 
+  background: #cbcecf;
+  border-radius: 8px;
 }
 
 .ui-autocomplete::-webkit-scrollbar-thumb {
-  background: #fff; 
-  border-radius: 8px; 
+  background: #fff;
+  border-radius: 8px;
 }
 
 .ui-autocomplete::-webkit-scrollbar-thumb:hover {
@@ -338,10 +372,9 @@ label {
 }
 
 .ui-autocomplete {
-  scrollbar-width: thin; 
+  scrollbar-width: thin;
   scrollbar-color: #888 #f1f1f1;
 }
-
 
 /* title */
 .h1-main {
@@ -367,10 +400,8 @@ label {
 
 /* map */
 .map {
-  margin-top: 30px;
   width: 100%;
   height: 400px;
-  margin-bottom: 20px;
 }
 
 [class*="copyrights-pane"] {

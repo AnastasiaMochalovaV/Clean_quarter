@@ -1,3 +1,10 @@
+setTimeout(function() {
+  const notification = document.querySelector('.notifications');
+  if (notification) {
+    notification.classList.remove('show');
+  }
+}, 2000); 
+
 $(document).ready(function () {
   $.ajax({
     url: "backend/get_pests.php",
@@ -72,18 +79,21 @@ $(document).ready(function () {
   });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+  const insectsSelect = document.getElementById("insects");
+  const defaultOption = insectsSelect.querySelector('option[value=""]');
 
-
-
-
-
+  if (defaultOption) {
+    defaultOption.disabled = true;
+  }
+});
 
 document.getElementById("add-insect").addEventListener("click", function () {
   const insectsSelect = document.getElementById("insects");
   const selectedValue = insectsSelect.value;
   const selectedText = insectsSelect.options[insectsSelect.selectedIndex].text;
 
-  if (selectedValue !== "all") {
+  if (selectedValue !== "") {
     const insectField = createInsectField(selectedText, selectedValue);
 
     document.getElementById("selected-insects").appendChild(insectField);
@@ -103,13 +113,13 @@ document.getElementById("add-insect").addEventListener("click", function () {
     );
     optionToRemove.remove();
 
-    insectsSelect.value = "all";
+    insectsSelect.value = "";
   } else {
     alert("Выберите насекомое из списка перед добавлением.");
   }
 });
 
-function createInsectField(text) {
+function createInsectField(text, value) {
   const insectDiv = document.createElement("div");
   insectDiv.className = "field close";
   insectDiv.textContent = text;
@@ -117,10 +127,6 @@ function createInsectField(text) {
   const removeButton = document.createElement("span");
   removeButton.textContent = ".....";
   removeButton.style.opacity = "0";
-  removeButton.addEventListener("click", function () {
-    removeInsectField(insectDiv, text);
-  });
-
   removeButton.addEventListener("click", function () {
     removeInsectField(insectDiv, text, value);
   });
@@ -138,7 +144,7 @@ function removeInsectField(field, text, value) {
     ? hiddenInsectsInput.value.split(",")
     : [];
 
-  const updatedArray = insectsArray.filter((value) => value !== text);
+  const updatedArray = insectsArray.filter((insect) => insect !== text);
   hiddenInsectsInput.value = updatedArray.join(",");
 
   const insectsSelect = document.getElementById("insects");
@@ -147,3 +153,30 @@ function removeInsectField(field, text, value) {
   option.textContent = text;
   insectsSelect.appendChild(option);
 }
+
+document
+  .getElementById("submit-form")
+  .addEventListener("click", function (event) {
+    const insectsSelect = document.getElementById("insects");
+    const hiddenInsectsInput = document.getElementById("hidden-insects");
+    const selectedValue = insectsSelect.value;
+
+    if (
+      selectedValue !== "" &&
+      !hiddenInsectsInput.value.includes(selectedValue)
+    ) {
+      const insectsArray = hiddenInsectsInput.value
+        ? hiddenInsectsInput.value.split(",")
+        : [];
+
+      insectsArray.push(selectedValue);
+      hiddenInsectsInput.value = insectsArray.join(",");
+
+      const optionToRemove = insectsSelect.querySelector(
+        `option[value="${selectedValue}"]`
+      );
+      optionToRemove.remove();
+
+      insectsSelect.value = "";
+    }
+  });

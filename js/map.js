@@ -24,6 +24,25 @@ async function init() {
 
   document
     .getElementById("form-change")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault();
+      let address = document.getElementById("address").value;
+
+      if (address) {
+        let geoResult = await ymaps.geocode(address);
+        let geoObject = geoResult.geoObjects.get(0);
+
+        if (geoObject) {
+          let coordinates = geoObject.geometry.getCoordinates();
+          map.setCenter(coordinates, 17); 
+        } else {
+          alert("Адрес не найден. Проверьте корректность ввода.");
+        }
+      }
+    });
+
+  document
+    .getElementById("form-change")
     .addEventListener("change", async () => {
       let period = document.getElementById("period").value;
       let district = document.getElementById("district").value;

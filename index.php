@@ -32,6 +32,15 @@
         </div>
     </header>
 
+    <?php
+    if (isset($_COOKIE['status']) && $_COOKIE['status'] == 'success') {
+        echo "<div class='notifications show'>
+                <p>Заявление успешно отправлено!</p>
+            </div>";
+        setcookie('status', '', time() - 3600, '/');
+    }
+    ?>
+
     <main>
         <section id="intro">
             <div class="container">
@@ -115,7 +124,7 @@
                         </div>
                     </div>
 
-                    <div id="map" class="map"></div>
+                    <div id="map" class="map pt-32"></div>
                     <script src="https://api-maps.yandex.ru/2.1/?apikey=22b04afd-ac73-42fa-a1ec-06a4af1c98fe&lang=ru_RU"></script>
                 </form>
             </div>
