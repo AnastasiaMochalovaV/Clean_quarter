@@ -12,7 +12,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <script src="js/script.js" defer></script>
-    <script src="js/map copy.js" defer></script>
+    <script src="js/map.js" defer></script>
 </head>
 
 <body>
@@ -67,7 +67,7 @@
         <section id="map-block">
             <div class="container">
                 <h2 class="h2-main">Карта</h2>
-                <form action="backend/get_placemark.php" method="GET">
+                <form id="form-change" action="backend/get_placemark.php" method="GET">
                     <div class="form-group">
                         <input type="text" id="address" class="field input" name="address" placeholder="Введите адрес">
 
@@ -117,8 +117,6 @@
 
                     <div id="map" class="map"></div>
                     <script src="https://api-maps.yandex.ru/2.1/?apikey=22b04afd-ac73-42fa-a1ec-06a4af1c98fe&lang=ru_RU"></script>
-
-                    <div id="coordinatesList"></div>
                 </form>
             </div>
         </section>

@@ -1,4 +1,6 @@
 <?php
+header("Content-Type: application/json; charset=UTF-8");
+
 include 'database.php';
 
 $address = $_GET['address'] ?? null;
@@ -7,53 +9,88 @@ $district = $_GET['district'] ?? 'all';
 $year_built = $_GET['year_built'] ?? 'all';
 $insects = $_GET['insects'] ?? 'all';
 
-$query = "SELECT DISTINCT geodata_center, SIMPLE_ADDRESS as address, COUNT(*) as complaints
-          FROM houses h
-          JOIN statements s USING(house_id)
-          JOIN pests_statement ps USING(statement_id)
-          WHERE 1=1";
+try {
+    $params = [];
+    $query = "SELECT DISTINCT geodata_center, SIMPLE_ADDRESS AS address, COUNT(*) AS complaints
+              FROM houses h
+              JOIN statements s USING(house_id)
+              JOIN pests_statement ps USING(statement_id)
+              WHERE 1=1";
 
-$params = [];
-
-if ($address) {
-    $query .= " AND SIMPLE_ADDRESS LIKE :address";
-    $params[':address'] = "$address";
-}
-
-if ($period !== 'all') {
-    $dateFilter = match ($period) {
-        'week' => date('Y-m-d', strtotime('-1 week')),
-        'month' => date('Y-m-d', strtotime('-1 month')),
-        'year' => date('Y-m-d', strtotime('-1 year')),
-        'year5' => date('Y-m-d', strtotime('-5 years')),
-        'year10' => date('Y-m-d', strtotime('-10 years')),
-        default => null
-    };
-    if ($dateFilter) {
-        $query .= " AND date >= :dateFilter";
-        $params[':dateFilter'] = $dateFilter;
+    if ($address) {
+        $query .= " AND SIMPLE_ADDRESS LIKE ?";
+        $params[] = "%$address%";
     }
-}
 
-if ($district  !== 'all') {
-    $query .= " AND pest_id IN (SELECT ps.pest_id FROM pests_statement ps
-                    	            JOIN pests p USING(pest_id)
-                                WHERE type LIKE :district)";
-    $params[':district'] = $district;
-}
-
-if ($year_built !== 'all') {
-    if ($year_built === 'before_2000') {
-        $query .= " AND YEAR(DDOC) < 2000";
-    } elseif ($year_built === '2000_2010') {
-        $query .= " AND YEAR(DDOC) BETWEEN 2000 AND 2010";
-    } elseif ($year_built === 'after_2010') {
-        $query .= " AND YEAR(DDOC) > 2010";
+    if ($period !== 'all') {
+        if ($period === 'week') {
+            $query .= " AND DATE(date) >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
+        } elseif ($period === 'month') {
+            $query .= " AND DATE(date) >= DATE_SUB(NOW(), INTERVAL 1 MONTH)";
+        } elseif ($period === 'year') {
+            $query .= " AND DATE(date) >= DATE_SUB(NOW(), INTERVAL 1 YEAR)";
+        } elseif ($period === 'year5') {
+            $query .= " AND DATE(date) >= DATE_SUB(NOW(), INTERVAL 5 YEAR)";
+        } elseif ($period === 'year10') {
+            $query .= " AND DATE(date) >= DATE_SUB(NOW(), INTERVAL 10 YEAR)";
+        }
     }
+
+    if ($district !== 'all') {
+        $query .= " AND ADM_AREA LIKE ?";
+        $params[] = "$district";
+    }
+
+    if ($year_built !== 'all') {
+        if ($year_built === 'before_2000') {
+            $query .= " AND YEAR(h.DDOC) < 2000";
+        } elseif ($year_built === '2000_2010') {
+            $query .= " AND YEAR(h.DDOC) BETWEEN 2000 AND 2010";
+        } elseif ($year_built === 'after_2010') {
+            $query .= " AND YEAR(h.DDOC) > 2010";
+        }
+    }
+
+    if ($insects !== 'all') {
+        $query .= " AND ps.pest_id IN (SELECT pest_id FROM pests WHERE type LIKE ?)";
+        $params[] = "%$insects%";
+    }
+
+    $query .= " GROUP BY geodata_center, SIMPLE_ADDRESS";
+
+    $stmt = $mysqli->prepare($query);
+    if ($stmt === false) {
+        throw new Exception("Ошибка подготовки запроса: " . $mysqli->error);
+    }
+
+    if (!empty($params)) {
+        $types = str_repeat('s', count($params));
+        $stmt->bind_param($types, ...$params);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $coordinates = [];
+    while ($row = $result->fetch_assoc()) {
+        if (preg_match('/coordinates=\[([0-9\.\-]+), ([0-9\.\-]+)\]/', $row['geodata_center'], $matches)) {
+            $latitude = (float)$matches[2];
+            $longitude = (float)$matches[1];
+
+            $coordinates[] = [
+                'coordinates' => [$latitude, $longitude],
+                'address' => $row['address'],
+                'complaints' => (int)$row['complaints']
+            ];
+        }
+    }
+
+    echo json_encode($coordinates);
+} catch (Exception $e) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => $e->getMessage()
+    ]);
 }
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-
-$query .= " GROUP BY geodata_center, SIMPLE_ADDRESS";
+$mysqli->close();
