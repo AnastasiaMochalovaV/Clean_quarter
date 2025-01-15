@@ -1,82 +1,89 @@
-setTimeout(function() {
-  const notification = document.querySelector('.notifications');
+setTimeout(function () {
+  const notification = document.querySelector(".notifications");
   if (notification) {
-    notification.classList.remove('show');
+    notification.classList.remove("show");
   }
-}, 2000); 
+}, 2000);
 
-$(document).ready(function () {
-  $.ajax({
-    url: "backend/get_pests.php",
-    dataType: "json",
-    success: function (data) {
-      if (data.status === "success") {
-        const pests = data.data;
-        const selectElement = $("#insects");
-
-        pests.forEach(function (pest) {
-          const option = $("<option></option>")
-            .attr("value", pest.type)
-            .text(pest.type);
-          selectElement.append(option);
-        });
-      } else {
-        console.error("Ошибка получения данных о вредителях:", data.message);
-      }
-    },
-    error: function () {
-      console.error("Ошибка запроса данных о вредителях.");
-    },
-  });
-});
-
-$(document).ready(function () {
-  $("#address").autocomplete({
-    source: function (request, response) {
-      $.ajax({
-        url: "backend/get_houses.php",
-        dataType: "json",
-        data: {
-          term: request.term,
-        },
-        success: function (data) {
-          response(data);
-        },
-        error: function () {
-          console.error("Ошибка получения данных.");
-        },
-      });
-    },
-    minLength: 2,
-  });
-});
-
-$(document).ready(function () {
-  $.ajax({
-    url: "backend/get_districts.php",
-    dataType: "json",
-    success: function (data) {
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("backend/get_pests.php")
+    .then((response) => response.json())
+    .then((data) => {
       if (data.error) {
         console.error(data.error);
       } else {
-        const selectElement = $("#district");
+        const selectElement = document.getElementById("insects");
 
-        selectElement.empty();
-
-        selectElement.append('<option value="all">Все округа</option>');
-
-        data.forEach(function (district) {
-          const option = $("<option></option>")
-            .attr("value", district)
-            .text(district);
-          selectElement.append(option);
+        data.forEach((pests) => {
+          const option = document.createElement("option");
+          option.value = pests;
+          option.textContent = pests;
+          selectElement.appendChild(option);
         });
       }
-    },
-    error: function () {
-      console.error("Ошибка запроса данных о округах.");
-    },
+    })
+    .catch(() => console.error("Ошибка запроса данных о вредителях."));
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const addressInput = document.getElementById("address");
+  const suggestionsList = document.getElementById("suggestions");
+
+  const showSuggestions = (data) => {
+    suggestionsList.innerHTML = data.map((item) => `<li>${item}</li>`).join("");
+    suggestionsList.style.display = data.length ? "block" : "none";
+  };
+
+  suggestionsList.addEventListener("click", (event) => {
+    if (event.target.tagName === "LI") {
+      addressInput.value = event.target.textContent;
+      suggestionsList.style.display = "none";
+    }
   });
+
+  addressInput.addEventListener("input", () => {
+    const query = addressInput.value;
+
+    if (query.length < 2) {
+      suggestionsList.style.display = "none";
+      return;
+    }
+
+    fetch(`backend/get_houses.php?term=${encodeURIComponent(query)}`)
+      .then((response) => (response.ok ? response.json() : Promise.reject()))
+      .then(showSuggestions)
+      .catch(() => {
+        console.error("Ошибка получения данных.");
+        suggestionsList.style.display = "none";
+      });
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest(".form-group")) {
+      suggestionsList.style.display = "none";
+    }
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("backend/get_districts.php")
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.error) {
+        console.error(data.error);
+      } else {
+        const selectElement = document.getElementById("district");
+        selectElement.innerHTML = '<option value="all">Все округа</option>';
+
+        data.forEach((district) => {
+          const option = document.createElement("option");
+          option.value = district;
+          option.textContent = district;
+          selectElement.appendChild(option);
+        });
+      }
+    })
+    .catch(() => console.error("Ошибка запроса данных о округах."));
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -95,7 +102,6 @@ document.getElementById("add-insect").addEventListener("click", function () {
 
   if (selectedValue !== "") {
     const insectField = createInsectField(selectedText, selectedValue);
-
     document.getElementById("selected-insects").appendChild(insectField);
 
     const hiddenInsectsInput = document.getElementById("hidden-insects");
@@ -108,11 +114,9 @@ document.getElementById("add-insect").addEventListener("click", function () {
       hiddenInsectsInput.value = insectsArray.join(",");
     }
 
-    const optionToRemove = insectsSelect.querySelector(
-      `option[value="${selectedValue}"]`
+    insectsSelect.removeChild(
+      insectsSelect.querySelector(`option[value="${selectedValue}"]`)
     );
-    optionToRemove.remove();
-
     insectsSelect.value = "";
   } else {
     alert("Выберите насекомое из списка перед добавлением.");
@@ -144,7 +148,7 @@ function removeInsectField(field, text, value) {
     ? hiddenInsectsInput.value.split(",")
     : [];
 
-  const updatedArray = insectsArray.filter((insect) => insect !== text);
+  const updatedArray = insectsArray.filter((insect) => insect !== value);
   hiddenInsectsInput.value = updatedArray.join(",");
 
   const insectsSelect = document.getElementById("insects");
@@ -154,29 +158,25 @@ function removeInsectField(field, text, value) {
   insectsSelect.appendChild(option);
 }
 
-document
-  .getElementById("submit-form")
-  .addEventListener("click", function (event) {
-    const insectsSelect = document.getElementById("insects");
-    const hiddenInsectsInput = document.getElementById("hidden-insects");
-    const selectedValue = insectsSelect.value;
+document.getElementById("submit-form").addEventListener("click", function () {
+  const insectsSelect = document.getElementById("insects");
+  const hiddenInsectsInput = document.getElementById("hidden-insects");
+  const selectedValue = insectsSelect.value;
 
-    if (
-      selectedValue !== "" &&
-      !hiddenInsectsInput.value.includes(selectedValue)
-    ) {
-      const insectsArray = hiddenInsectsInput.value
-        ? hiddenInsectsInput.value.split(",")
-        : [];
+  if (
+    selectedValue !== "" &&
+    !hiddenInsectsInput.value.includes(selectedValue)
+  ) {
+    const insectsArray = hiddenInsectsInput.value
+      ? hiddenInsectsInput.value.split(",")
+      : [];
 
-      insectsArray.push(selectedValue);
-      hiddenInsectsInput.value = insectsArray.join(",");
+    insectsArray.push(selectedValue);
+    hiddenInsectsInput.value = insectsArray.join(",");
 
-      const optionToRemove = insectsSelect.querySelector(
-        `option[value="${selectedValue}"]`
-      );
-      optionToRemove.remove();
-
-      insectsSelect.value = "";
-    }
-  });
+    insectsSelect.removeChild(
+      insectsSelect.querySelector(`option[value="${selectedValue}"]`)
+    );
+    insectsSelect.value = "";
+  }
+});

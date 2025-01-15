@@ -34,7 +34,7 @@ async function init() {
 
         if (geoObject) {
           let coordinates = geoObject.geometry.getCoordinates();
-          map.setCenter(coordinates, 17); 
+          map.setCenter(coordinates, 17);
         } else {
           alert("Адрес не найден. Проверьте корректность ввода.");
         }
@@ -92,3 +92,32 @@ async function updateMap(map, filterValue) {
 }
 
 ymaps.ready(init);
+
+function updateStatistics(data) {
+  document.getElementById(
+    "total-statements"
+  ).innerHTML = `Уже <b>${data.total_statements}</b> пользователей оставили заявление на сайте`;
+
+  document.getElementById(
+    "top-district"
+  ).innerHTML = `<b>${data.dirty_district}</b> — округ с наибольшим числом заявлений`;
+
+  document.getElementById(
+    "top-insect"
+  ).innerHTML = `<b>${data.popular_pest}</b> — насекомые, которые встречаются чаще всего в жилых домах`;
+}
+
+function fetchStatistics() {
+  fetch("backend/get_statistics.php")
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.error) {
+        console.error("Ошибка: ", data.error);
+      } else {
+        updateStatistics(data);
+      }
+    })
+    .catch((error) => console.error("Ошибка загрузки данных: ", error));
+}
+
+document.addEventListener("DOMContentLoaded", () => fetchStatistics());

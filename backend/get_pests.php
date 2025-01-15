@@ -3,32 +3,17 @@ header("Content-Type: application/json; charset=UTF-8");
 
 include 'database.php';
 
-try {
-    $query = "SELECT type FROM pests";
-    $result = $mysqli->query($query);
+$pests = $mysqli->query("SELECT type FROM pests");
 
-    if (!$result) {
-        throw new Exception("Ошибка выполнения запроса: " . $mysqli->error);
+if ($pests) {
+    $pests_array = [];
+    while ($row = $pests->fetch_assoc()) {
+        $pests_array[] = $row['type'];
     }
 
-    $pests = [];
-
-    while ($row = $result->fetch_assoc()) {
-        $pests[] = [
-            'type' => $row['type']
-        ];
-    }
-
-    echo json_encode([
-        'status' => 'success',
-        'data' => $pests
-    ]);
-} catch (Exception $e) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => $e->getMessage()
-    ]);
+    echo json_encode($pests_array);
+} else {
+    echo json_encode(["error" => "Ошибка запроса данных о насекомых"]);
 }
 
 $mysqli->close();
-?>

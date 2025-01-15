@@ -18,10 +18,6 @@ try {
     $query = "SELECT SIMPLE_ADDRESS FROM houses WHERE $whereClause LIMIT 30";
     $result = $mysqli->query($query);
 
-    if (!$result) {
-        throw new Exception("Ошибка выполнения запроса: " . $mysqli->error);
-    }
-
     $addresses = [];
     while ($row = $result->fetch_assoc()) {
         $addresses[] = $row['SIMPLE_ADDRESS'];
@@ -29,10 +25,7 @@ try {
 
     echo json_encode($addresses);
 } catch (Exception $e) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => $e->getMessage()
-    ]);
+    echo json_encode(["error" => "Ошибка запроса данных о домах"]);
 }
 
 $mysqli->close();

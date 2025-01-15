@@ -9,10 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <script src="js/script.js" defer></script>
     <script src="js/map.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -25,7 +24,7 @@
                 <nav class="nav">
                     <a href="#intro">Главная</a>
                     <a href="#map-block">Карта</a>
-                    <a href="#">Статистика</a>
+                    <a href="#statistic">Статистика</a>
                     <a href="form.php">Обратиться</a>
                 </nav>
             </div>
@@ -44,11 +43,13 @@
     <main>
         <section id="intro">
             <div class="container">
-                <div class="intro_title_inner">
-                    <h1 class="h1-main">Контроль и мониторинг санитарного состояния жилых домов в Москве</h1>
-                </div>
+
                 <div class="intro_inner">
+
                     <div class="intro_text_inner">
+                        <div class="intro_title_inner">
+                            <h1 class="h1-main">Контроль и мониторинг санитарного состояния жилых домов в Москве</h1>
+                        </div>
                         <div class="intro_description">
                             <p>Сервис создан для того, чтобы помочь жителям города сообщать о случаях появления вредителей в жилых домах и видеть актуальные данные на карте.</p>
                             <p>Вы можете:</p>
@@ -59,7 +60,6 @@
                                     <li>Получите доступ к статистическим данным о частоте жалоб и распространенности проблем в разных районах города.</li>
                                 </ul>
                             </div>
-                            <p>Уже более 100 тыс. пользователей оставили заявление</p>
                         </div>
 
                         <a href="form.php">
@@ -78,7 +78,16 @@
                 <h2 class="h2-main">Карта</h2>
                 <form id="form-change" action="backend/get_placemark.php" method="GET">
                     <div class="form-group">
-                        <input type="text" id="address" class="field input" name="address" placeholder="Введите адрес">
+                        <div class="input">
+                            <input
+                                type="search"
+                                id="address"
+                                class="field input"
+                                name="address"
+                                autocomplete="off"
+                                placeholder="Введите адрес">
+                            <ul id="suggestions" class="suggestions"></ul>
+                        </div>
 
                         <button class="btn-bright" type="submit">Найти</button>
                     </div>
@@ -129,7 +138,37 @@
                 </form>
             </div>
         </section>
+
+        <section id="statistic">
+            <div class="container">
+                <h2 class="h2-main">Статистика</h2>
+                <div class="form-group">
+                    <div class="block">
+                        <img src="images/statement.png" alt="Заявления">
+                        <p id="total-statements"></p>
+                    </div>
+                    <div class="block">
+                        <img src="images/house.png" alt="Округ">
+                        <p id="top-district"></p>
+                    </div>
+                    <div class="block">
+                        <img src="images/pest.png" alt="Насекомое">
+                        <p id="top-insect"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>
+                Используются <a href="https://data.mos.ru/opendata/60562?pageSize=50&pageIndex=0&isDynamic=false&version=3&release=1251"
+                    aria-label="Ссылка на открытые данные Правительства Москвы">открытые данные</a> с портала открытых данных Правительства Москвы.
+            </p>
+        </div>
+    </footer>
 </body>
 
 </html>

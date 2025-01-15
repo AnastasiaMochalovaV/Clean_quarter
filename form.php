@@ -9,8 +9,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
   <script src="js/script.js" defer></script>
 </head>
 
@@ -23,9 +21,8 @@
         </div>
         <nav class="nav">
           <a href="index.php">Главная</a>
-          <a href="#map">Карта</a>
-          <a href="#">Статистика</a>
-          <a href="form.php">Обратиться</a>
+          <a href="index.php #map">Карта</a>
+          <a href="index.php #statistic">Статистика</a>
         </nav>
       </div>
     </div>
@@ -92,15 +89,19 @@
           <div class="block">
             <h2 class="h2-green">Информация о проблеме</h2>
 
-            <div class="form pt-32">
-              <label for="address">Адрес с выявленной проблемой</label>
-              <input
-                type="text"
-                id="address"
-                class="field input"
-                name="address"
-                placeholder="Введите адрес"
-                required />
+            <div class="input">
+              <div class="form pt-32">
+                <label for="address">Адрес с выявленной проблемой</label>
+                <input
+                  type="search"
+                  id="address"
+                  class="field input"
+                  name="address"
+                  autocomplete="off"
+                  placeholder="Введите адрес"
+                  required />
+              </div>
+              <ul id="suggestions" class="suggestions"></ul>
             </div>
 
             <div class="form-select pt-16">

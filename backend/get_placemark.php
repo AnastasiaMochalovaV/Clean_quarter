@@ -81,10 +81,7 @@ try {
 
     echo json_encode($coordinates);
 } catch (Exception $e) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => $e->getMessage()
-    ]);
+    echo json_encode(["error" => "Ошибка запроса данных о метках"]);
 }
 
 $mysqli->close();
